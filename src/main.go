@@ -3,6 +3,7 @@ package main
 import (
 	"bufio"
 	"errors"
+	"flag"
 	"fmt"
 	"os"
 	"strings"
@@ -15,7 +16,7 @@ func loadEnvFile(filename string) (map[string]string, error) {
 	}
 
 	// Load `.env file
-	file, err := os.Open(".env")
+	file, err := os.Open(filename)
 	if err != nil {
 		return nil, fmt.Errorf("could not open %s: %w", filename, err)
 	}
@@ -59,9 +60,12 @@ func loadEnvFile(filename string) (map[string]string, error) {
 }
 
 func main() {
-	// Load env file (default: .env)
-	filename := ".env"
-	envMap, err := loadEnvFile(filename)
+	fileFlag := flag.String("file", ".env", "path to .env file")
+	flag.StringVar(fileFlag, "f", ".env", "short alias for --file")
+	flag.Parse()
+
+	// Load env file
+	envMap, err := loadEnvFile(*fileFlag)
 	if err != nil {
 		fmt.Println("[ERROR] ", err)
 		fmt.Println("Please make sure the file exists or specify the correct file name.")
@@ -69,7 +73,8 @@ func main() {
 	}
 
 	// Create .env.template file
-	templateFile, err := os.Create(".env.template")
+	templateFilename := fmt.Sprintf("%s.template", *fileFlag)
+	templateFile, err := os.Create(templateFilename)
 	if err != nil {
 		fmt.Println("Cloud not create .env.template file: ", err)
 		os.Exit(1)
