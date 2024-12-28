@@ -79,12 +79,12 @@ func loadEnvFile(filename string) ([]string, map[string]string, error) {
 var rootCmd = &cobra.Command{
 	Use:   "envlate",
 	Short: "Create a template file from an existing .env file",
-	Long: `A longer description that spans multiple lines and likely contains
-examples and usage of using your application. For example:
+	Long: `This CLI tool generates a template file from an existing environment variables file.
 
-Cobra is a CLI library for Go that empowers applications.
-This application is a tool to generate the needed files
-to quickly create a Cobra application.`,
+By default, it looks for a .env file in the current directory. However, you can specify any environment variables file, such as .env.local, using the --file option.
+
+This makes it easier to manage and share environment variable templates across different environments or projects.`,
+
 	// Uncomment the following line if your bare application
 	// has an action associated with it:
 	Run: func(cmd *cobra.Command, args []string) {
