@@ -55,4 +55,30 @@ func main() {
 		fmt.Printf("Key: %s, Value: %s\n", k, v)
 	}
 	fmt.Println("=============================")
+
+	// Create .env.template file
+	templateFile, err := os.Create(".env.template")
+	if err != nil {
+		fmt.Println("Cloud not create .env.template file: ", err)
+		return
+	}
+	defer templateFile.Close()
+
+	// Write key-value pairs to .env.template file
+	writer := bufio.NewWriter(templateFile)
+	for k := range envMap {
+		line := fmt.Sprintf("%s=\n", k)
+		_, err := writer.WriteString(line)
+		if err != nil {
+			fmt.Println("Error while writing to template file: ", err)
+			return
+		}
+	}
+	// Flush the buffer
+	if err := writer.Flush(); err != nil {
+		fmt.Println("Error while flushing write: : ", err)
+		return
+	}
+
+	fmt.Println("Successfully created .env.template")
 }
