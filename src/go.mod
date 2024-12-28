@@ -1,4 +1,4 @@
-module env-template-cli
+module envlate
 
 go 1.23.4
 
