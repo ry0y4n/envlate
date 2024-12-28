@@ -11,8 +11,16 @@ import (
 
 func loadEnvFile(filename string) (map[string]string, error) {
 	// Check if file exists
-	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
+	info, err := os.Stat(filename)
+	if errors.Is(err, os.ErrNotExist) {
 		return nil, fmt.Errorf("%s does not exist", filename)
+	} else if err != nil {
+		return nil, fmt.Errorf("could not stat %s: %w", filename, err)
+	}
+
+	// check if file is a directory
+	if info.IsDir() {
+		return nil, fmt.Errorf("%s is a directory, not a file", filename)
 	}
 
 	// Load `.env file
