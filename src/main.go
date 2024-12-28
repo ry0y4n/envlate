@@ -2,17 +2,22 @@ package main
 
 import (
 	"bufio"
+	"errors"
 	"fmt"
 	"os"
 	"strings"
 )
 
-func main() {
+func loadEnvFile(filename string) (map[string]string, error) {
+	// Check if file exists
+	if _, err := os.Stat(filename); errors.Is(err, os.ErrNotExist) {
+		return nil, fmt.Errorf("%s does not exist", filename)
+	}
+
 	// Load `.env file
 	file, err := os.Open(".env")
 	if err != nil {
-		fmt.Println("Can't open .env file ", err)
-		return
+		return nil, fmt.Errorf("could not open %s: %w", filename, err)
 	}
 	defer file.Close()
 
@@ -28,10 +33,10 @@ func main() {
 		if trimmedLine == "" || strings.HasPrefix(trimmedLine, "#") {
 			continue
 		}
-		
+
 		// Split key and value
 		splitIndex := strings.Index(trimmedLine, "=")
-		if (splitIndex == -1) {
+		if splitIndex == -1 {
 			fmt.Println("Warning: invalid line (no '='):", trimmedLine)
 			continue
 		}
@@ -47,20 +52,27 @@ func main() {
 	}
 
 	if err := scanner.Err(); err != nil {
-		fmt.Println("Error while reading .env file: ", err)
+		return nil, fmt.Errorf("error while reading %s: %w", filename, err)
 	}
 
-	fmt.Println("====== Key/Value Pairs ======")
-	for k, v := range envMap {
-		fmt.Printf("Key: %s, Value: %s\n", k, v)
+	return envMap, nil
+}
+
+func main() {
+	// Load env file (default: .env)
+	filename := ".env"
+	envMap, err := loadEnvFile(filename)
+	if err != nil {
+		fmt.Println("[ERROR] ", err)
+		fmt.Println("Please make sure the file exists or specify the correct file name.")
+		os.Exit(1)
 	}
-	fmt.Println("=============================")
 
 	// Create .env.template file
 	templateFile, err := os.Create(".env.template")
 	if err != nil {
 		fmt.Println("Cloud not create .env.template file: ", err)
-		return
+		os.Exit(1)
 	}
 	defer templateFile.Close()
 
@@ -71,13 +83,13 @@ func main() {
 		_, err := writer.WriteString(line)
 		if err != nil {
 			fmt.Println("Error while writing to template file: ", err)
-			return
+			os.Exit(1)
 		}
 	}
 	// Flush the buffer
 	if err := writer.Flush(); err != nil {
-		fmt.Println("Error while flushing write: : ", err)
-		return
+		fmt.Println("Error while flushing write: ", err)
+		os.Exit(1)
 	}
 
 	fmt.Println("Successfully created .env.template")
