@@ -9,28 +9,29 @@ import (
 	"strings"
 )
 
-func loadEnvFile(filename string) (map[string]string, error) {
+func loadEnvFile(filename string) ([]string, map[string]string, error) {
 	// Check if file exists
 	info, err := os.Stat(filename)
 	if errors.Is(err, os.ErrNotExist) {
-		return nil, fmt.Errorf("%s does not exist", filename)
+		return nil, nil, fmt.Errorf("%s does not exist", filename)
 	} else if err != nil {
-		return nil, fmt.Errorf("could not stat %s: %w", filename, err)
+		return nil, nil, fmt.Errorf("could not stat %s: %w", filename, err)
 	}
 
 	// check if file is a directory
 	if info.IsDir() {
-		return nil, fmt.Errorf("%s is a directory, not a file", filename)
+		return nil, nil, fmt.Errorf("%s is a directory, not a file", filename)
 	}
 
 	// Load `.env file
 	file, err := os.Open(filename)
 	if err != nil {
-		return nil, fmt.Errorf("could not open %s: %w", filename, err)
+		return nil, nil, fmt.Errorf("could not open %s: %w", filename, err)
 	}
 	defer file.Close()
 
 	// key-value map for env variables
+	keys := make([]string, 0)
 	envMap := make(map[string]string)
 
 	// Parse `.env` file
@@ -58,13 +59,14 @@ func loadEnvFile(filename string) (map[string]string, error) {
 
 		// Add to map
 		envMap[key] = value
+		keys = append(keys, key)
 	}
 
 	if err := scanner.Err(); err != nil {
-		return nil, fmt.Errorf("error while reading %s: %w", filename, err)
+		return nil, nil, fmt.Errorf("error while reading %s: %w", filename, err)
 	}
 
-	return envMap, nil
+	return keys, envMap, nil
 }
 
 func main() {
@@ -73,7 +75,7 @@ func main() {
 	flag.Parse()
 
 	// Load env file
-	envMap, err := loadEnvFile(*fileFlag)
+	keys, envMap, err := loadEnvFile(*fileFlag)
 	if err != nil {
 		fmt.Println("[ERROR] ", err)
 		fmt.Println("Please make sure the file exists or specify the correct file name.")
@@ -91,7 +93,15 @@ func main() {
 
 	// Write key-value pairs to .env.template file
 	writer := bufio.NewWriter(templateFile)
-	for k := range envMap {
+
+	// Write in the order of the saved "keys"
+	for _, k := range keys {
+		if k == "" {
+			continue
+		}
+
+		_ = envMap[k]
+
 		line := fmt.Sprintf("%s=\n", k)
 		_, err := writer.WriteString(line)
 		if err != nil {
@@ -99,6 +109,7 @@ func main() {
 			os.Exit(1)
 		}
 	}
+
 	// Flush the buffer
 	if err := writer.Flush(); err != nil {
 		fmt.Println("Error while flushing write: ", err)
