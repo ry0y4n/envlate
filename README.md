@@ -1,6 +1,13 @@
 memo
 
 ```bash
-# go build -o .\build\ .\src\main.go
-make
+go run -o envlate
+./envlate --file path/to/envfile
+```
+
+goreleaser
+
+```bash
+# local
+goreleaser release --snapshot --clean
 ```
