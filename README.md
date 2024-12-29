@@ -6,6 +6,8 @@ Envlate helps you generate template files (e.g., `.env.template` or `.env.local.
 
 > **Thank you for using Envlate!** If you find it useful, consider giving the repository a star and sharing it with others who might benefit.
 
+![](envlate-demo.gif)
+
 ## Features
 
 - **Automatic template generation**  
