@@ -130,7 +130,7 @@ This makes it easier to manage and share environment variable templates across d
 			os.Exit(1)
 		}
 
-		fmt.Println("Successfully created .env.template")
+		fmt.Println("Successfully created: ", templateFilename)
 	},
 }
 
