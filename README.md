@@ -25,8 +25,22 @@ curl -fsSL https://raw.githubusercontent.com/ry0y4n/envlate/main/install.sh | sh
 
 ### Windows
 
+#### x86_64 (default)
+
 ```powershell
 powershell -Command "Invoke-WebRequest -Uri https://raw.githubusercontent.com/ry0y4n/envlate/main/install.ps1 -OutFile install.ps1; .\install.ps1"
+```
+
+#### arm64
+
+```powershell
+powershell -Command "Invoke-WebRequest -Uri https://raw.githubusercontent.com/ry0y4n/envlate/main/install.ps1 -OutFile install.ps1; .\install.ps1 -Arch arm64"
+```
+
+#### i386
+
+```powershell
+powershell -Command "Invoke-WebRequest -Uri https://raw.githubusercontent.com/ry0y4n/envlate/main/install.ps1 -OutFile install.ps1; .\install.ps1 -Arch i386"
 ```
 
 Once the script completes, you can use the `envlate` command in your terminal.

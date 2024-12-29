@@ -1,3 +1,9 @@
+param(
+    [Parameter(Mandatory=$false)]
+    [ValidateSet("x86_64", "arm64", "i386")]
+    [string]$Arch = "x86_64"
+)
+
 $ErrorActionPreference = 'Stop'
 
 [string]$Version
@@ -18,16 +24,17 @@ if (-not $Version) {
     }
 }
 
-# TODO arm64, i386
-$url = "https://github.com/ry0y4n/envlate/releases/download/$Version/envlate_Windows_x86_64.zip"
+$url = "https://github.com/ry0y4n/envlate/releases/download/$Version/envlate_Windows_$Arch.zip"
 $output = "$env:temp\envlate.zip"
 $installDir = "$env:LocalAppData\envlate"
 
-Write-Host "Downloading envlate version $Version from $url"
+Write-Host "Downloading envlate version $Version for architecture: $Arch"
+Write-Host "Download URL: $url"
+
 Invoke-WebRequest -Uri $url -OutFile $output
 
 Write-Host "Extracting envlate"
-Expand-Archive -Path $output -DestinationPath $installDir
+Expand-Archive -Path $output -DestinationPath $installDir -Force
 
 Write-Host "Adding envlate to PATH"
 $oldPath = [Environment]::GetEnvironmentVariable('Path', [System.EnvironmentVariableTarget]::User)
