@@ -1,6 +1,8 @@
 # Envlate
 
-Envlate is a CLI tool, written in Go, that helps you generate template files (e.g., `.env.template` or `.env.local.template`) from existing `.env` or `.env.local` files. This makes it easier to manage and share environment variable configurations across different environments or with other developers.
+Envlate is a **cross-platform** CLI tool, written in Go. You can use it on any platform, including Windows, macOS, and Linux.
+
+Envlate helps you generate template files (e.g., `.env.template` or `.env.local.template`) from existing `.env` or `.env.local` files. This makes it easier to manage and share environment variable configurations across different environments or with other developers.
 
 > **Thank you for using Envlate!** If you find it useful, consider giving the repository a star and sharing it with others who might benefit.
 
